@@ -1,0 +1,939 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Wayground - Art Appreciation Master Hub (50 Qs)</title>
+  <style>
+    :root {
+      --wg-bg: #0b0914;
+      --wg-card: #151128;
+      --wg-border: #292147;
+      --wg-purple: #7000ff;
+      --wg-purple-glow: rgba(112, 0, 255, 0.4);
+      --wg-pink: #ff007f;
+      --wg-cyan: #00f0ff;
+      --wg-yellow: #ffcc00;
+      --wg-green: #00e676;
+      --wg-red: #ff3366;
+      --wg-text: #ffffff;
+      --wg-subtext: #9a94b8;
+      --font-main: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    [data-theme="light"] {
+      --wg-bg: #f0edfa;
+      --wg-card: #ffffff;
+      --wg-border: #d4ceeb;
+      --wg-purple: #6200ee;
+      --wg-purple-glow: rgba(98, 0, 238, 0.2);
+      --wg-pink: #d81b60;
+      --wg-cyan: #00b0ff;
+      --wg-yellow: #f57f17;
+      --wg-green: #2e7d32;
+      --wg-red: #c62828;
+      --wg-text: #1a1528;
+      --wg-subtext: #5e5875;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: var(--font-main);
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: var(--wg-bg);
+      color: var(--wg-text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 10px;
+      transition: background 0.3s, color 0.3s;
+    }
+
+    .app-container {
+      width: 100%;
+      max-width: 600px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    /* Top Wayground Header */
+    header {
+      background: var(--wg-card);
+      border: 1px solid var(--wg-border);
+      border-radius: 18px;
+      padding: 12px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .logo-badge {
+      background: linear-gradient(135deg, var(--wg-purple), var(--wg-pink));
+      color: #fff;
+      font-weight: 900;
+      font-size: 1.1rem;
+      padding: 4px 10px;
+      border-radius: 10px;
+      box-shadow: 0 0 12px var(--wg-purple-glow);
+    }
+
+    .brand-title {
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: var(--wg-text);
+    }
+
+    .user-profile {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .xp-pill {
+      background: rgba(255, 204, 0, 0.15);
+      border: 1px solid var(--wg-yellow);
+      color: var(--wg-yellow);
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 0.8rem;
+      font-weight: 800;
+    }
+
+    .theme-toggle {
+      background: none;
+      border: none;
+      font-size: 1.2rem;
+      cursor: pointer;
+    }
+
+    /* Navigation Bar */
+    nav {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 6px;
+      background: var(--wg-card);
+      padding: 6px;
+      border-radius: 16px;
+      border: 1px solid var(--wg-border);
+    }
+
+    .nav-btn {
+      background: transparent;
+      border: none;
+      color: var(--wg-subtext);
+      padding: 10px 4px;
+      border-radius: 12px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.2s ease;
+    }
+
+    .nav-btn.active {
+      background: var(--wg-purple);
+      color: #ffffff;
+      box-shadow: 0 4px 14px var(--wg-purple-glow);
+    }
+
+    /* Views */
+    .view {
+      display: none;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .view.active {
+      display: flex;
+    }
+
+    /* Wayground Card Styling */
+    .wg-card {
+      background: var(--wg-card);
+      border: 1px solid var(--wg-border);
+      border-radius: 20px;
+      padding: 16px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+    }
+
+    /* Quiz Arena */
+    .quiz-stats {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.85rem;
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+
+    .timer-container {
+      width: 100%;
+      height: 6px;
+      background: var(--wg-border);
+      border-radius: 3px;
+      overflow: hidden;
+      margin-bottom: 12px;
+    }
+
+    .timer-bar {
+      height: 100%;
+      width: 100%;
+      background: linear-gradient(90deg, var(--wg-cyan), var(--wg-purple));
+      transition: width 0.15s linear;
+    }
+
+    .question-box {
+      font-size: 1.05rem;
+      font-weight: 700;
+      line-height: 1.4;
+      color: var(--wg-text);
+      margin-bottom: 16px;
+    }
+
+    .options-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .opt-btn {
+      background: var(--wg-bg);
+      border: 2px solid var(--wg-border);
+      color: var(--wg-text);
+      padding: 12px 14px;
+      border-radius: 14px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      text-align: left;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .opt-btn:active {
+      transform: scale(0.98);
+    }
+
+    .opt-btn.correct {
+      background: rgba(0, 230, 118, 0.15);
+      border-color: var(--wg-green);
+      color: var(--wg-green);
+      font-weight: 800;
+    }
+
+    .opt-btn.incorrect {
+      background: rgba(255, 51, 102, 0.15);
+      border-color: var(--wg-red);
+      color: var(--wg-red);
+    }
+
+    .exp-box {
+      margin-top: 12px;
+      padding: 12px 14px;
+      border-radius: 12px;
+      background: rgba(0, 240, 255, 0.1);
+      border: 1px solid var(--wg-cyan);
+      color: var(--wg-text);
+      font-size: 0.85rem;
+      line-height: 1.4;
+      display: none;
+    }
+
+    .action-btn {
+      background: linear-gradient(135deg, var(--wg-purple), var(--wg-pink));
+      color: #fff;
+      border: none;
+      padding: 14px;
+      border-radius: 14px;
+      font-size: 1rem;
+      font-weight: 800;
+      cursor: pointer;
+      width: 100%;
+      margin-top: 12px;
+      box-shadow: 0 4px 14px var(--wg-purple-glow);
+    }
+
+    .action-btn:active {
+      transform: scale(0.98);
+    }
+
+    /* Results */
+    .results-box {
+      text-align: center;
+      padding: 24px 16px;
+    }
+
+    .score-circle {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--wg-purple), var(--wg-pink));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      font-weight: 900;
+      margin: 16px auto;
+      box-shadow: 0 0 20px var(--wg-purple-glow);
+    }
+
+    .retry-mistakes {
+      background: linear-gradient(135deg, #ff3366, #ff007f);
+      box-shadow: 0 4px 14px rgba(255, 51, 102, 0.4);
+    }
+
+    /* Speed Matcher Grid */
+    .match-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .match-card {
+      background: var(--wg-bg);
+      border: 2px solid var(--wg-border);
+      border-radius: 14px;
+      padding: 10px 6px;
+      min-height: 70px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      cursor: pointer;
+      user-select: none;
+      transition: all 0.2s;
+    }
+
+    .match-card.selected {
+      border-color: var(--wg-cyan);
+      background: rgba(0, 240, 255, 0.15);
+      transform: scale(0.96);
+    }
+
+    .match-card.matched {
+      visibility: hidden;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    /* Flashcard Deck */
+    .fc-wrapper {
+      perspective: 1000px;
+      width: 100%;
+      height: 220px;
+      cursor: pointer;
+    }
+
+    .fc-card {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      transform-style: preserve-3d;
+      transition: transform 0.5s cubic-bezier(0.4, 0.2, 0.2, 1);
+      border-radius: 20px;
+    }
+
+    .fc-card.flipped {
+      transform: rotateY(180deg);
+    }
+
+    .fc-front, .fc-back {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      background: var(--wg-card);
+      border: 2px solid var(--wg-border);
+      border-radius: 20px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+    }
+
+    .fc-back {
+      transform: rotateY(180deg);
+      border-color: var(--wg-purple);
+      background: linear-gradient(135deg, var(--wg-card), var(--wg-bg));
+    }
+
+    .fc-cat {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      font-weight: 800;
+      color: var(--wg-cyan);
+      margin-bottom: 8px;
+      letter-spacing: 1px;
+    }
+
+    .fc-title {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: var(--wg-text);
+    }
+
+    .fc-desc {
+      font-size: 0.9rem;
+      line-height: 1.4;
+      color: var(--wg-text);
+    }
+
+    .fc-controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .fc-btn {
+      flex: 1;
+      background: var(--wg-card);
+      border: 1px solid var(--wg-border);
+      color: var(--wg-text);
+      padding: 12px;
+      border-radius: 12px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    /* Cheatsheet Search */
+    .search-input {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 12px;
+      border: 2px solid var(--wg-border);
+      background: var(--wg-bg);
+      color: var(--wg-text);
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin-bottom: 12px;
+      outline: none;
+    }
+
+    .cheat-row {
+      padding: 10px 0;
+      border-bottom: 1px solid var(--wg-border);
+    }
+
+    .cheat-row:last-child {
+      border-bottom: none;
+    }
+
+    .cheat-head {
+      font-size: 0.9rem;
+      font-weight: 800;
+      color: var(--wg-yellow);
+      margin-bottom: 2px;
+    }
+
+    .cheat-body {
+      font-size: 0.85rem;
+      color: var(--wg-subtext);
+      line-height: 1.3;
+    }
+
+    .mnemonic-banner {
+      background: rgba(112, 0, 255, 0.15);
+      border: 1px solid var(--wg-purple);
+      padding: 10px 14px;
+      border-radius: 14px;
+      font-size: 0.8rem;
+      text-align: center;
+      margin-bottom: 10px;
+      font-weight: 600;
+    }
+
+    .mnemonic-banner span {
+      color: var(--wg-cyan);
+      font-weight: 800;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="app-container">
+    <!-- Top Header -->
+    <header>
+      <div class="brand">
+        <span class="logo-badge">W</span>
+        <span class="brand-title">WAYGROUND</span>
+      </div>
+      <div class="user-profile">
+        <div class="xp-pill">⚡ <span id="xpVal">150</span> XP</div>
+        <button class="theme-toggle" id="themeBtn" title="Theme Mode">🌙</button>
+      </div>
+    </header>
+
+    <!-- Navigation Tabs -->
+    <nav>
+      <button class="nav-btn active" data-target="quizView">
+        🎯 <span>Arena</span>
+      </button>
+      <button class="nav-btn" data-target="matchView">
+        ⚡ <span>Match</span>
+      </button>
+      <button class="nav-btn" data-target="cardsView">
+        🎴 <span>Cards</span>
+      </button>
+      <button class="nav-btn" data-target="sheetView">
+        📜 <span>Sheet</span>
+      </button>
+    </nav>
+
+    <!-- View 1: Quiz Arena -->
+    <div id="quizView" class="view active">
+      <div class="wg-card" id="quizCard">
+        <div class="quiz-stats">
+          <span id="quizProgress" style="color:var(--wg-cyan)">Q 1/50</span>
+          <span id="quizStreak" style="color:var(--wg-yellow)">🔥 Streak: 0</span>
+          <span id="quizScore">Score: 0</span>
+        </div>
+
+        <div class="timer-container">
+          <div class="timer-bar" id="timerBar"></div>
+        </div>
+
+        <div class="question-box" id="questionBox">Loading questions...</div>
+
+        <div class="options-grid" id="optionsGrid"></div>
+
+        <div class="exp-box" id="expBox"></div>
+
+        <button class="action-btn" id="nextBtn" style="display: none;">Continue ➔</button>
+      </div>
+
+      <!-- Quiz Finish Screen -->
+      <div class="wg-card results-box" id="resultsCard" style="display: none;">
+        <h2>🏆 Round Finished!</h2>
+        <div class="score-circle" id="finalScoreCircle">0%</div>
+        <p id="resultsText" style="color:var(--wg-subtext)">Keep training your visual memory!</p>
+
+        <div style="margin-top: 16px; display: flex; flex-direction: column; gap: 10px;">
+          <button class="action-btn retry-mistakes" id="retryMistakesBtn" style="display: none;">
+            🔄 Retake Mistakes Only (<span id="mistakeCount">0</span>)
+          </button>
+          <button class="action-btn" id="restartQuizBtn">
+            🎮 Restart Full 50-Q Arena
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- View 2: Speed Matcher -->
+    <div id="matchView" class="view">
+      <div class="wg-card">
+        <div class="quiz-stats">
+          <span style="color:var(--wg-cyan)">⚡ Match Madness</span>
+          <span id="matchMoves" style="color:var(--wg-yellow)">Moves: 0</span>
+        </div>
+        <p style="font-size:0.8rem; color:var(--wg-subtext); margin-bottom:10px;">Pair every art term with its correct definition!</p>
+        
+        <div class="match-grid" id="matchGrid"></div>
+        <button class="action-btn" id="resetMatchBtn" style="margin-top:14px;">Reset Game Grid</button>
+      </div>
+    </div>
+
+    <!-- View 3: Flashcards -->
+    <div id="cardsView" class="view">
+      <div class="mnemonic-banner">
+        💡 <b>Memory Tip:</b> <span>L.S.F.C.V.T.S.</span> ➔ <i>Look So Fine, Can View Through Space!</i>
+      </div>
+
+      <div class="fc-wrapper" id="fcWrapper">
+        <div class="fc-card" id="fcCard">
+          <div class="fc-front">
+            <div class="fc-cat" id="fcCat">Category</div>
+            <div class="fc-title" id="fcTitle">Term</div>
+            <p style="font-size:0.75rem; color:var(--wg-cyan); margin-top:14px;">(Tap Card to Flip)</p>
+          </div>
+          <div class="fc-back">
+            <div class="fc-desc" id="fcDesc">Definition</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="fc-controls">
+        <button class="fc-btn" id="fcPrev">◀ Prev</button>
+        <span id="fcCounter" style="font-size:0.85rem; font-weight:800;">1 / 15</span>
+        <button class="fc-btn" id="fcNext">Next ▶</button>
+      </div>
+    </div>
+
+    <!-- View 4: Cheatsheet -->
+    <div id="sheetView" class="view">
+      <div class="wg-card">
+        <input type="text" class="search-input" id="sheetSearch" placeholder="🔍 Search exam terms (e.g. Sfumato, T'nalak)..." />
+        <div id="cheatList"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    /* FULL 50 QUESTIONS DATA FROM REVIEWER PDF */
+    const QUESTIONS = [
+      { q: "What is defined as a point moving through space?", options: ["Shape", "Line", "Value", "Form"], correct: 1, exp: "Line is defined as a point moving through space." },
+      { q: "A two-dimensional enclosed area that is flat is known as a:", options: ["Form", "Shape", "Value", "Space"], correct: 1, exp: "Shape is a flat 2D enclosed area." },
+      { q: "A three-dimensional object or the illusion of three-dimensionality with depth is called a:", options: ["Line", "Shape", "Form", "Texture"], correct: 2, exp: "Form has 3D depth or solidity." },
+      { q: "What visual element refers to the lightness or darkness of a color?", options: ["Hue", "Saturation", "Value", "Texture"], correct: 2, exp: "Value is the lightness or darkness of a color." },
+      { q: "The actual or visual surface quality (such as rough, smooth, or soft) is called:", options: ["Space", "Texture", "Value", "Form"], correct: 1, exp: "Texture is the actual or visual surface feel." },
+      { q: "What term describes the area around, between, or within objects?", options: ["Space", "Shape", "Line", "Balance"], correct: 0, exp: "Space is the area around or within objects." },
+      { q: "Which design principle makes a particular element stand out as the focus of attention?", options: ["Rhythm", "Balance", "Emphasis", "Unity"], correct: 2, exp: "Emphasis is the center of focus and interest." },
+      { q: "The distribution of visual weight that creates stability in a composition is known as:", options: ["Proportion", "Balance", "Contrast", "Variety"], correct: 1, exp: "Balance distributes visual weight for stability." },
+      { q: "When all elements work together to create a harmonious whole, it is called:", options: ["Contrast", "Unity", "Rhythm", "Pattern"], correct: 1, exp: "Unity creates a harmonious whole." },
+      { q: "The differences between opposite elements, such as light versus dark, create:", options: ["Contrast", "Pattern", "Sfumato", "Movement"], correct: 0, exp: "Contrast arranges opposite elements like light vs dark." },
+      { q: "What design principle describes the size relationship between parts of an artwork?", options: ["Rhythm", "Balance", "Proportion", "Emphasis"], correct: 2, exp: "Proportion refers to size relationships." },
+      { q: "The repetition of elements that creates visual movement or tempo is called:", options: ["Rhythm", "Value", "Sfumato", "Unity"], correct: 0, exp: "Rhythm uses repeated elements to guide the eye." },
+      { q: "What memory tip is provided in the reviewer for the Elements of Art?", options: ["Art Is Fun, Create Great Visuals Today", "Look So Fine, Can View Through Space (L.S.F.C.V.T.S.)", "Lines Shape Form Color Value Texture Space", "Light Shines Forever Creating Vibrant True Structures"], correct: 1, exp: "L.S.F.C.V.T.S. stands for 'Look So Fine, Can View Through Space!'" },
+      { q: "Cave paintings created by early humans featuring animals belong to which era?", options: ["Renaissance", "Prehistoric Art", "Modern Art", "Impressionism"], correct: 1, exp: "Prehistoric art includes early cave paintings." },
+      { q: "Art of which historical period frequently focused on Christianity, religious figures, and symbolic imagery with less naturalistic figures?", options: ["Medieval Art", "Romanticism", "Post-Impressionism", "Prehistoric Art"], correct: 0, exp: "Medieval art focuses on spiritual/religious symbolism." },
+      { q: "Which art movement emphasized realistic human forms, anatomy, proportion, and perspective?", options: ["Medieval Art", "Renaissance Art", "Postmodernism", "Impressionism"], correct: 1, exp: "Renaissance art revived realism, anatomy, and linear perspective." },
+      { q: "What is the term for soft, smoky transitions between tones and colors associated with Leonardo da Vinci?", options: ["Chiaroscuro", "Sfumato", "Linear perspective", "Atmospheric perspective"], correct: 1, exp: "Sfumato creates soft, smoky transitions between tones." },
+      { q: "The use of strong light and dark contrasts to create volume and depth in painting is called:", options: ["Sfumato", "Chiaroscuro", "Appropriation", "Texture"], correct: 1, exp: "Chiaroscuro uses light and shadow to create volume." },
+      { q: "Which perspective technique uses converging lines and vanishing points to suggest depth?", options: ["Atmospheric perspective", "Linear perspective", "Sfumato", "Chiaroscuro"], correct: 1, exp: "Linear perspective uses vanishing points." },
+      { q: "In which perspective style do distant objects appear less detailed and often lighter or bluer?", options: ["Atmospheric perspective", "Linear perspective", "Chiaroscuro", "Sfumato"], correct: 0, exp: "Atmospheric perspective makes distant objects hazy/blue." },
+      { q: "Which 19th-century movement emphasized emotion, imagination, dramatic scenes, and awe-inspiring nature?", options: ["Impressionism", "Romanticism", "Modern Art", "Medieval Art"], correct: 1, exp: "Romanticism focuses on emotion and awe of nature." },
+      { q: "Which art movement captured fleeting moments, changing light, and everyday scenes with visible brushstrokes?", options: ["Impressionism", "Post-Impressionism", "Romanticism", "Prehistoric"], correct: 0, exp: "Impressionism captured fleeting light impressions." },
+      { q: "Which movement built upon Impressionism but placed greater emphasis on personal expression, structure, and symbolism (e.g., Van Gogh)?", options: ["Modern Art", "Post-Impressionism", "Medieval Art", "Realism"], correct: 1, exp: "Post-Impressionism emphasized expressive personal vision." },
+      { q: "Art that explored new styles, forms, and techniques while challenging established traditions is classified as:", options: ["Prehistoric Art", "Modern Art", "Medieval Art", "Romanticism"], correct: 1, exp: "Modern art focused on experimentation and new styles." },
+      { q: "What movement often combines historical styles, popular culture, unconventional materials, irony, and cultural criticism?", options: ["Postmodernism", "Renaissance", "Impressionism", "Prehistoric Art"], correct: 0, exp: "Postmodernism uses irony, pop culture, and appropriation." },
+      { q: "What does 'mixed media' mean in art?", options: ["Using only oil paints on canvas", "Using two or more artistic materials or techniques in one artwork", "Digital editing without physical materials", "Sculpting exclusively with marble"], correct: 1, exp: "Mixed media combines two or more materials/techniques." },
+      { q: "The appearance of a surface, whether rough, smooth, or bumpy, even when not touched, is called:", options: ["Physical texture", "Visual texture", "Value", "Chiaroscuro"], correct: 1, exp: "Visual texture is the illusion of surface quality." },
+      { q: "The actual tactile quality of a material is referred to as:", options: ["Visual texture", "Physical texture", "Form", "Space"], correct: 1, exp: "Physical texture is felt by touching." },
+      { q: "What term describes borrowing or reusing existing images or objects to create new commentary or meaning?", options: ["Copyright infringement", "Appropriation", "Commercial art", "Sfumato"], correct: 1, exp: "Appropriation reuses imagery to comment or reinterpret." },
+      { q: "Marcel Duchamp's L.H.O.O.Q., which added facial hair to a Mona Lisa reproduction, is a classic example of:", options: ["Fair use parody", "Appropriation", "Kalinga weaving", "Atmospheric perspective"], correct: 1, exp: "Duchamp's work is a famous example of art appropriation." },
+      { q: "What legal doctrine may permit certain uses of copyrighted work for criticism, parody, or transformative purposes?", options: ["VARA (Visual Artists Rights Act)", "Fair use", "Appropriation", "Commercial licensing"], correct: 1, exp: "Fair use allows legal transformative or critical uses." },
+      { q: "What is the primary purpose of the Visual Artists Rights Act (VARA)?", options: ["It serves as an automatic defense against copyright infringement", "It addresses certain moral rights of visual artists in the U.S.", "It regulates museum ticket prices", "It standardizes art school curricula"], correct: 1, exp: "VARA addresses moral rights of artists." },
+      { q: "What is 'soul-making' in the context of art?", options: ["Creating art strictly to meet market demand", "Personal transformation, self-discovery, and growth through creative expression", "Reusing historical corporate logos", "Replicating traditional pottery without changes"], correct: 1, exp: "Soul-making is personal growth and self-discovery via art." },
+      { q: "Art created primarily to meet market demand or client specifications is known as:", options: ["Soul-making art", "Commercial art", "Indigenous ritual art", "Postmodern irony"], correct: 1, exp: "Commercial art fulfills client or market demands." },
+      { q: "In a visual narrative, what do broken chains typically symbolize?", options: ["Danger or tension", "Freedom or release", "Hope or a new beginning", "Isolation or struggle"], correct: 1, exp: "Broken chains represent release and freedom." },
+      { q: "What symbolic meaning is commonly associated with an open road in visual art?", options: ["Opportunity or a new journey", "Danger and uncertainty", "Isolation and struggle", "Freedom from captivity"], correct: 0, exp: "An open road represents a new journey or opportunity." },
+      { q: "Dark mountains and storm clouds in an artwork usually convey:", options: ["Hope and new beginnings", "Tension, danger, or uncertainty", "Freedom and release", "Joy and vitality"], correct: 1, exp: "Storm clouds symbolize tension and uncertainty." },
+      { q: "What is 'anempathetic music' in film?", options: ["Music that perfectly matches the violent action on screen", "Music that continues cheerfully or calmly despite disturbing or violent visuals", "Sound originating directly from inside the story world", "A complete absence of background sound"], correct: 1, exp: "Anempathetic music contrasts cheerfully with disturbing scenes." },
+      { q: "Sound that originates within the story world (such as a radio playing in a room) is called:", options: ["Non-diegetic sound", "Diegetic sound", "Anempathetic music", "Dissonant tone"], correct: 1, exp: "Diegetic sound comes from within the story world." },
+      { q: "Kalinga textiles are best known for:", options: ["Dream-inspired abaca cloth", "Woven geometric patterns, including zigzags and diamond shapes", "Unglazed earthenware pottery from Vigan", "Green origami sculptures"], correct: 1, exp: "Kalinga textiles feature geometric zigzag patterns." },
+      { q: "What traditional T'boli textile is made from abaca fibers and dream-inspired motifs?", options: ["T'nalak", "Kalinga wrap", "Okir panel", "Burnay jar"], correct: 0, exp: "T'nalak is woven by T'boli women inspired by dreams." },
+      { q: "What is 'Okir'?", options: ["A fern-inspired motif", "A traditional decorative art style associated with Maranao art featuring flowing, plant-like motifs", "A type of pottery from Ilocos Sur", "A form of Japanese paper folding"], correct: 1, exp: "Okir features elaborate curving plant-like motifs." },
+      { q: "The 'Pako Rabong' motif is inspired by which natural form?", options: ["A fern", "A legendary bird", "A mountain range", "Ocean waves"], correct: 0, exp: "Pako Rabong is a fern-inspired Maranao motif." },
+      { q: "Traditional earthenware pottery associated with Vigan, Ilocos Sur, is known as:", options: ["T'nalak", "Burnay pottery", "Sarimanok", "Okir ceramics"], correct: 1, exp: "Burnay pottery comes from Vigan, Ilocos Sur." },
+      { q: "What is the 'Sarimanok'?", options: ["A fern motif symbolizing growth", "A legendary bird motif associated with Maranao culture with elaborate ornamentation", "A sacred abaca weaving pattern", "An architectural carving style"], correct: 1, exp: "Sarimanok is a legendary ornamented bird motif." },
+      { q: "Incorporating a traditional weaving pattern into a modern bag while explaining its cultural meaning is an example of:", options: ["Copyright infringement", "Creative reinterpretation with cultural awareness", "Commercial exploitation", "Appropriation without context"], correct: 1, exp: "Respecting context while designing is creative reinterpretation." },
+      { q: "What is origami?", options: ["The art of carving wood into animals", "The traditional Japanese art of folding paper into representational or abstract forms", "Weaving abaca fibers into ceremonial cloth", "Molding earthenware clay into jars"], correct: 1, exp: "Origami is paper folding." },
+      { q: "Which skills are developed through practicing origami?", options: ["Patience, concentration, fine motor control, and spatial reasoning", "Oil painting and chiaroscuro shading", "Musical composition and rhythm", "Digital video editing and CGI"], correct: 0, exp: "Origami builds fine motor control, spatial logic, and patience." },
+      { q: "Which art movement or term matches the key idea: 'Fleeting light and visual impressions'?", options: ["Romanticism", "Impressionism", "Postmodernism", "Realism"], correct: 1, exp: "Impressionism focuses on light and fleeting impressions." },
+      { q: "Which term describes 'Reusing existing imagery to create meaning or commentary'?", options: ["Appropriation", "Soul-making", "Sfumato", "Chiaroscuro"], correct: 0, exp: "Appropriation reuses imagery for new commentary." }
+    ];
+
+    const FLASHCARDS = [
+      { cat: "Elements", title: "Line", desc: "A point moving through space. Creates edges and movement." },
+      { cat: "Elements", title: "Value", desc: "The lightness or darkness of a color. Creates contrast and depth." },
+      { cat: "Principles", title: "Balance", desc: "Distribution of visual weight across a composition." },
+      { cat: "Art History", title: "Sfumato", desc: "Soft, smoky transitions between tones (Leonardo da Vinci)." },
+      { cat: "Art History", title: "Chiaroscuro", desc: "Use of strong light and dark to create volume." },
+      { cat: "Art History", title: "Romanticism", desc: "Focuses on raw emotion, imagination, and awe-inspiring nature." },
+      { cat: "Art History", title: "Impressionism", desc: "Captures fleeting light, everyday scenes, and visible brushstrokes." },
+      { cat: "Filipino Art", title: "T'nalak", desc: "Traditional T'boli cloth made from dream-inspired abaca fibers." },
+      { cat: "Filipino Art", title: "Okir", desc: "Elaborate curving, plant-like decorative motifs (Maranao)." },
+      { cat: "Filipino Art", title: "Pako Rabong", desc: "Fern-inspired motif representing growth and vitality." },
+      { cat: "Filipino Art", title: "Burnay Pottery", desc: "Traditional earthenware craft from Vigan, Ilocos Sur." },
+      { cat: "Concepts", title: "Appropriation", desc: "Reusing existing images to comment or create new meaning." },
+      { cat: "Concepts", title: "Soul-making", desc: "Personal growth and self-discovery through creative expression." },
+      { cat: "Film Sound", title: "Anempathetic", desc: "Cheerful music playing over violent/disturbing visuals." },
+      { cat: "Crafts", title: "Origami", desc: "The art of folding paper into representational or abstract forms." }
+    ];
+
+    const MATCH_PAIRS = [
+      { term: "Sfumato", def: "Smoky tonal soft transitions" },
+      { term: "T'nalak", def: "T'boli dream abaca cloth" },
+      { term: "Okir", def: "Curving Maranao motifs" },
+      { term: "Pako Rabong", def: "Fern motif for growth" },
+      { term: "Anempathetic", def: "Cheerful music vs violence" },
+      { term: "Soul-making", def: "Self-discovery via art" }
+    ];
+
+    /* STATE MANAGEMENT */
+    let currentPool = [...QUESTIONS];
+    let qIdx = 0;
+    let score = 0;
+    let streak = 0;
+    let totalXp = 150;
+    let timerInterval = null;
+    let userMistakes = [];
+
+    let fcIdx = 0;
+    let selectedMatchCard = null;
+    let moves = 0;
+    let matchesFound = 0;
+
+    /* DOM ELEMENTS */
+    const navBtns = document.querySelectorAll('.nav-btn');
+    const views = document.querySelectorAll('.view');
+    const themeBtn = document.getElementById('themeBtn');
+
+    navBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        navBtns.forEach(b => b.classList.remove('active'));
+        views.forEach(v => v.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById(btn.dataset.target).classList.add('active');
+      });
+    });
+
+    themeBtn.addEventListener('click', () => {
+      const isDark = document.body.getAttribute('data-theme') !== 'light';
+      document.body.setAttribute('data-theme', isDark ? 'light' : 'dark');
+      themeBtn.textContent = isDark ? '☀️' : '🌙';
+    });
+
+    /* QUIZ FUNCTIONS */
+    function startQuiz(pool = QUESTIONS) {
+      currentPool = pool;
+      qIdx = 0;
+      score = 0;
+      streak = 0;
+      userMistakes = [];
+
+      document.getElementById('quizCard').style.display = 'block';
+      document.getElementById('resultsCard').style.display = 'none';
+      renderQuestion();
+    }
+
+    function renderQuestion() {
+      clearInterval(timerInterval);
+      const q = currentPool[qIdx];
+
+      document.getElementById('quizProgress').textContent = `Q ${qIdx + 1}/${currentPool.length}`;
+      document.getElementById('quizStreak').textContent = `🔥 Streak: ${streak}`;
+      document.getElementById('quizScore').textContent = `Score: ${score}`;
+      document.getElementById('questionBox').textContent = q.q;
+
+      const grid = document.getElementById('optionsGrid');
+      grid.innerHTML = '';
+
+      document.getElementById('expBox').style.display = 'none';
+      document.getElementById('nextBtn').style.display = 'none';
+
+      q.options.forEach((opt, idx) => {
+        const btn = document.createElement('button');
+        btn.className = 'opt-btn';
+        btn.textContent = opt;
+        btn.addEventListener('click', () => handleAnswer(idx, q));
+        grid.appendChild(btn);
+      });
+
+      // Timer Bar
+      const timerBar = document.getElementById('timerBar');
+      timerBar.style.width = '100%';
+      let left = 100;
+      timerInterval = setInterval(() => {
+        left -= 1;
+        timerBar.style.width = `${left}%`;
+        if (left <= 0) {
+          clearInterval(timerInterval);
+          handleAnswer(-1, q);
+        }
+      }, 150);
+    }
+
+    function handleAnswer(selectedIdx, q) {
+      clearInterval(timerInterval);
+      const btns = document.querySelectorAll('.opt-btn');
+      btns.forEach(b => b.style.pointerEvents = 'none');
+
+      const expBox = document.getElementById('expBox');
+      expBox.textContent = q.exp;
+      expBox.style.display = 'block';
+
+      if (selectedIdx === q.correct) {
+        if (selectedIdx >= 0) btns[selectedIdx].classList.add('correct');
+        score += 10 + (streak * 2);
+        streak++;
+        totalXp += 10;
+        document.getElementById('xpVal').textContent = totalXp;
+      } else {
+        if (selectedIdx >= 0) btns[selectedIdx].classList.add('incorrect');
+        btns[q.correct].classList.add('correct');
+        streak = 0;
+        userMistakes.push(q);
+      }
+
+      document.getElementById('quizStreak').textContent = `🔥 Streak: ${streak}`;
+      document.getElementById('quizScore').textContent = `Score: ${score}`;
+
+      const nextBtn = document.getElementById('nextBtn');
+      nextBtn.style.display = 'block';
+      nextBtn.onclick = () => {
+        qIdx++;
+        if (qIdx < currentPool.length) {
+          renderQuestion();
+        } else {
+          showResults();
+        }
+      };
+    }
+
+    function showResults() {
+      document.getElementById('quizCard').style.display = 'none';
+      document.getElementById('resultsCard').style.display = 'block';
+
+      const pct = Math.round(((currentPool.length - userMistakes.length) / currentPool.length) * 100);
+      document.getElementById('finalScoreCircle').textContent = `${pct}%`;
+
+      const mistakeBtn = document.getElementById('retryMistakesBtn');
+      if (userMistakes.length > 0) {
+        document.getElementById('mistakeCount').textContent = userMistakes.length;
+        mistakeBtn.style.display = 'block';
+        mistakeBtn.onclick = () => startQuiz(userMistakes);
+      } else {
+        mistakeBtn.style.display = 'none';
+      }
+    }
+
+    document.getElementById('restartQuizBtn').addEventListener('click', () => startQuiz(QUESTIONS));
+
+    /* SPEED MATCHER */
+    function initMatcher() {
+      moves = 0;
+      matchesFound = 0;
+      selectedMatchCard = null;
+      document.getElementById('matchMoves').textContent = `Moves: 0`;
+
+      const grid = document.getElementById('matchGrid');
+      grid.innerHTML = '';
+
+      let cards = [];
+      MATCH_PAIRS.forEach((pair, idx) => {
+        cards.push({ id: idx, text: pair.term });
+        cards.push({ id: idx, text: pair.def });
+      });
+
+      cards.sort(() => Math.random() - 0.5);
+
+      cards.forEach(c => {
+        const div = document.createElement('div');
+        div.className = 'match-card';
+        div.textContent = c.text;
+        div.dataset.id = c.id;
+
+        div.addEventListener('click', () => handleMatchClick(div));
+        grid.appendChild(div);
+      });
+    }
+
+    function handleMatchClick(card) {
+      if (card.classList.contains('matched') || card === selectedMatchCard) return;
+
+      if (!selectedMatchCard) {
+        selectedMatchCard = card;
+        card.classList.add('selected');
+      } else {
+        moves++;
+        document.getElementById('matchMoves').textContent = `Moves: ${moves}`;
+
+        if (selectedMatchCard.dataset.id === card.dataset.id) {
+          card.classList.add('matched');
+          selectedMatchCard.classList.add('matched');
+          selectedMatchCard = null;
+          matchesFound++;
+          totalXp += 20;
+          document.getElementById('xpVal').textContent = totalXp;
+
+          if (matchesFound === MATCH_PAIRS.length) {
+            setTimeout(() => alert(`🎉 Perfect! Cleared in ${moves} moves. +120 XP!`), 300);
+          }
+        } else {
+          card.classList.add('selected');
+          setTimeout(() => {
+            card.classList.remove('selected');
+            if (selectedMatchCard) selectedMatchCard.classList.remove('selected');
+            selectedMatchCard = null;
+          }, 500);
+        }
+      }
+    }
+
+    document.getElementById('resetMatchBtn').addEventListener('click', initMatcher);
+
+    /* FLASHCARDS */
+    const fcWrapper = document.getElementById('fcWrapper');
+    const fcCard = document.getElementById('fcCard');
+
+    fcWrapper.addEventListener('click', () => {
+      fcCard.classList.toggle('flipped');
+    });
+
+    function updateFc() {
+      fcCard.classList.remove('flipped');
+      const item = FLASHCARDS[fcIdx];
+      document.getElementById('fcCat').textContent = item.cat;
+      document.getElementById('fcTitle').textContent = item.title;
+      document.getElementById('fcDesc').textContent = item.desc;
+      document.getElementById('fcCounter').textContent = `${fcIdx + 1} / ${FLASHCARDS.length}`;
+    }
+
+    document.getElementById('fcPrev').addEventListener('click', (e) => {
+      e.stopPropagation();
+      fcIdx = (fcIdx - 1 + FLASHCARDS.length) % FLASHCARDS.length;
+      updateFc();
+    });
+
+    document.getElementById('fcNext').addEventListener('click', (e) => {
+      e.stopPropagation();
+      fcIdx = (fcIdx + 1) % FLASHCARDS.length;
+      updateFc();
+    });
+
+    /* CHEATSHEET */
+    function initSheet() {
+      const list = document.getElementById('cheatList');
+      const search = document.getElementById('sheetSearch');
+
+      function render(term = '') {
+        list.innerHTML = '';
+        FLASHCARDS.filter(item => 
+          item.title.toLowerCase().includes(term.toLowerCase()) || 
+          item.desc.toLowerCase().includes(term.toLowerCase())
+        ).forEach(item => {
+          const div = document.createElement('div');
+          div.className = 'cheat-row';
+          div.innerHTML = `
+            <div class="cheat-head">${item.title} <span style="font-size:0.75rem; color:var(--wg-cyan);">(${item.cat})</span></div>
+            <div class="cheat-body">${item.desc}</div>
+          `;
+          list.appendChild(div);
+        });
+      }
+
+      search.addEventListener('input', (e) => render(e.target.value));
+      render();
+    }
+
+    /* INIT */
+    startQuiz();
+    initMatcher();
+    updateFc();
+    initSheet();
+  </script>
+</body>
+</html>
